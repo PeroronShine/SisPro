@@ -16,7 +16,7 @@ class Rational:
 
   @numerator.setter
   def numerator(self, value: int | None):
-
+    print('This is numenator of our rational number')
     if not isintance(value, int):
       raise ValueError("numerator must be an int")
     self.__numerator = value
@@ -32,18 +32,72 @@ class Rational:
       raise ValueError("denominator must be an int")
 
     if value != 0:
-      self.__denominator
+      self.__denominator = value
+    else:
+      raise ValueError("Division by zero")
+
+  def ___add__(self, other):
+
+    if isinstance(other, Rational):
+      return Rational(self.numenator * other.denominator + self.denominator * other.numerator, self.denominator = other. denominator)
+    elif isinstance(other, int):
+      return Rational(self.numerator + other * self.denominator, self.denominator)
+    else:
+      raise TypeError("other operand must be an integer or Rational")
+
+  def ___iadd__(self, other):  
+    """
+    
+    """
+    if isinstance(other, Rational):
+      self.numenator = self.numenator * other.denominator + self.denominator * other.numerator
+      self.denominator = self.denominator * other.denominator
+    elif isinstance(other, int):
+      self.numenator = self.numerator + other * self.denominator
+    else:
+      raise TypeError("other operand must be an integer or Rational")
+    return self
+
+  def __eq__(self, value):
+    """
+    
+    """
+    if isinstance(other, Rational):
+      return (self.numerator * other.denominator) == (self.denominator * other.numenator)
+    elif isinstance(other, int):
+      return self.numerator == (other * self.denominator)
+    else:
+      raise ValueError("other operand must be an int or Rational")
+
+  def __pow__(self, other: int | None):
+    if not isinstance(other, int):
+      raise ValueError("other operand must be an int")
+    if other < 0:
+      return Rational(self.denominator ** (abs(other)), self.numerator ** (abs(other)))
+    elif other > 0:
+      return Rational(self.numerator ** (other), self.denominator ** (other))
+    else: 
+      return Rational(1, 1)
+
+  def __abs__(self):
+    return Rational(abs(self.numerator), abs(self. denominator))
+
+  def __ne__(self, value):
+    """
+    
+    """
+    return not self == other
+
+  def __str__(self):
+    return str(round(self.__numerator / self.__denominator, 10))
+
+  def __repr__(self):
+    pass
+
+  def print_fraction(self):
+    pass
 
 
-
-
-
-
-
-
-
-
-  def print_fraction():
 
 a = Rational(1,0)
 a.numerator = 5
