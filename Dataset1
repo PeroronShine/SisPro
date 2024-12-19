@@ -1,0 +1,130 @@
+import pandas as pd
+import numpy as np
+import torch
+import tensorflow as tf
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+class Dataset():
+
+    def __init__(self, path_to_file: str):
+        self.__data = pd.read_csv(path_to_file)
+
+    def set_data(self, path_to_file: str):
+        self.__data = pd.read_csv(path_to_file)
+
+    def get_data(self):
+        return self.__data
+
+    def remove_outliers(self, column: str) -> pd.DataFrame:
+        """удаление выбросов(крайне больших чисел)
+        вычисляет значение, ниже которого находится 99% данных и хранит в переменной q
+        все строки, в которых значения в столбце превышают 99-й процентиль удаляются"""
+        q = self.__data[column].quantile(0.99)
+        self.__data = self.__data[self.__data[column] <= q]
+        return self.__data
+
+    def filled(self, strategy='mode', value=None):
+        """заполнение пропусков"""
+        """eсли в числовом столбце есть None(NaN), то заменяем его на то, что выбрал пользователь или удаляем
+        'median' - заменяет на медиану
+        'mode' - заменяет на самое частое
+        'medium' - на среднее значение
+        'const' - заменяем на заданную константу (меняет во всех столбцах и значение может не подойти)"""
+        for column in self.__data.columns:
+            if self.__data[column].isnull().sum() > 0:
+                if strategy == 'mode':
+                    mode_val = self.__data[column].mode()[0]
+                    self.__data[column].fillna(mode_val, inplace=True)
+                elif strategy == 'mean':
+                    mean_val = self.__data[column].sum()/self.__data[column].count()
+                    self.__data[column].fillna(mean_val, inplace=True)
+                elif strategy == 'median':
+                    median_val = self.__data[column].median()
+                    self.__data[column].fillna(median_val, inplace=True)
+                elif strategy == 'constant' and value is not None:
+                    self.__data[column].fillna(value, inplace=True)
+
+
+    def check_categorial(self, LessThen: int=None):
+        """выявление категориальных признаков
+        определяем, какие из колонок в можно считать категориальными
+        колонка может быть категориальной, если количество уникальных значений в ней не превышает общее количество строк в DataFrame.
+        колонка также считается категориальной, если количество уникальных значений не превышает threshold"""
+        if LessThen is None:
+            LessThen = self.__data.shape[0]
+
+        categorical_names = []
+
+        for i in self.__data.columns:
+            if self.__data[i].dtype in ('category', 'bool'):
+                categorical_names.append(i)
+            elif self.__data[i].dtype == 'object' and len(self.__data[i].astype(str).unique()) <= LessThen:
+                categorical_names.append(i)
+            elif self.__data[i].dtype == 'float64' and len(self.__data[i].round(10).unique()) <= LessThen:
+                categorical_names.append(i)
+            elif self.__data[i].dtype in ('int64', 'float64', 'timedelta[ns]', 'datatime64') and len(self.__data[i].unique()) <= LessThen:
+                categorical_names.append(i)
+            else:
+                print("Не удаётся определить признак")
+        return categorical_names
+
+
+    def eval_categorical(self, categorical_names, strategy='OneHot'):
+        """обработка категориальных данных"""
+        if strategy == 'Label':
+        """Label: присваивает каждому категориальному признаку уникальный номер"""
+            encoder = LabelEncoder()
+            for column in categorical_names:
+                self.__data[column] = encoder.fit_transform(self.__data[column])
+        
+        elif strategy == 'OneHot':
+            """OneHot: представление данных в виде бинарных векторов""" 
+            encoder = OneHotEncoder(sparse_output=False)
+            for column in categorical_names:
+                one_hot_encoded = encoder.fit_transform(self.__data[column])
+                one_hot_data = pd.DataFrame(one_hot_encoded, columns=encoder.get_feature_names_out([column]))
+                self.__data = pd.concat([self.__data, one_hot_data], axis=1)
+                self.__data.drop(columns=[column], inplace=True)
+        '''преобразовываем категориальные переменные в числовые значения'''
+
+    def preparing(self, LessThen: int=None, strategy='OneHot'):
+        """преобразование для анализа"""
+        for column in self.__data.columns:
+            self.remove_outliers(column)
+        self.filled(strategy='mode')
+        categorical = self.check_categorial(LessThen = LessThen)
+        self.eval_categorical(categorical, strategy='OneHot')
+
+    def display_stat(self):
+        """вывод статистики"""
+        print(self.__data.head(5))
+        print(self.__data.info())
+
+        for col in self.__data.select_dtypes(include=['int64', 'float64']).columns:
+            print(f"Статистика для колонки '{col}':")
+            print(f"Кол-во ненулевых значений: {self.__data[col].count()}")
+            print(f"Ср. знач.: {self.__data[col].mean()}")
+            print(f"Макс.знач.: {self.__data[col].max()}")
+            print(f"Мин. знач.: {self.__data[col].min()}\n")
+            self.__data[col].plot(kind='hist', figsize=(10, 5), grid=True, title=f'histogram {col}')
+            plt.show()
+
+    def transform(self, to_tensor='numpy'):
+        """Преобразовываем данные в тензоры для выбранной библиотеки"""
+        if to_tensor == 'numpy':
+            return self.X.to_numpy(), self.y.to_numpy()
+            print('Успешно переобразован в numpy!')
+        elif to_tensor == 'pytorch':
+            return torch.tensor(self.X.values, dtype=torch.float32), torch.tensor(self.y.values, dtype=torch.float32)
+            print('Успешно переобразован в pytorch!')
+        elif to_tensor == 'tensorflow':
+            return tf.convert_to_tensor(self.X.values, dtype=tf.float32), tf.convert_to_tensor(self.y.values, dtype=tf.float32)
+            print('Успешно переобразован в tensorflow!')
+        else:
+            raise ValueError("Поддерживаются только 'numpy', 'pytorch' и 'tensorflow'.")
+
+
+data1 = Dataset('/content/gym_members_exercise_tracking.csv')
+data1.display()
+data1.get_data()
