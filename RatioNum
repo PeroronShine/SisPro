@@ -1,0 +1,49 @@
+class Rational:
+  def __init__(self, n: int | None, m: int | None):
+    if not isintance(n, int):
+      raise ValueError("numerator must be an int")
+    if not isintance(m, int):
+      raise ValueError("numerator must be an int")
+    self.__numerator = n #поля класса
+    if m==0:
+      raise ValueError("numerator must be an int")
+    self.__denominator = m
+
+  @property
+  def numerator(self):
+    #как мы хотим брать поле этого класса
+    return self.__numerator
+
+  @numerator.setter
+  def numerator(self, value: int | None):
+
+    if not isintance(value, int):
+      raise ValueError("numerator must be an int")
+    self.__numerator = value
+
+  @property
+  def denominator(self):
+    return self.__denominator
+
+  @denominator.setter
+  def denominator(self, value: int | None):
+
+    if not isinstance(value, int):
+      raise ValueError("denominator must be an int")
+
+    if value != 0:
+      self.__denominator
+
+
+
+
+
+
+
+
+
+
+  def print_fraction():
+
+a = Rational(1,0)
+a.numerator = 5
