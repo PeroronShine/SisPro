@@ -1,54 +1,68 @@
 class Rational:
+  """принимаем два необязательных аргумента (n)числитель и (m)знаментель
+  используем аннотацию типов, указываем, что оба числа могут быть целыми
+  или None
+
+  проверяем на целочисленность, а после устанавливаем значения 
+  =как закрытое поле (атрибут)
+  """
   def __init__(self, n: int | None, m: int | None):
-    if not isintance(n, int):
+    if not isinstance(n, int):
       raise ValueError("numerator must be an int")
-    if not isintance(m, int):
-      raise ValueError("numerator must be an int")
-    self.__numerator = n #поля класса
+    if not isinstance(m, int):
+      raise ValueError("denomitor must be an int")
+
+    self.__numerator = n 
+
+    """знаменатель не может быть равен 0"""
     if m==0:
-      raise ValueError("numerator must be an int")
+      raise ValueError("Division by zero")
+
     self.__denominator = m
 
+  """геттер для числителя
+  получаем значение числителя через свойство numerator"""
   @property
   def numerator(self):
-    #как мы хотим брать поле этого класса
     return self.__numerator
-
+  
+  """сеттер для числителя
+  устанавливаем значение числителя
+  принимаем значение и проверяем целое оно или нет"""
   @numerator.setter
   def numerator(self, value: int | None):
-    print('This is numenator of our rational number')
-    if not isintance(value, int):
+    if not isinstance(value, int):
       raise ValueError("numerator must be an int")
     self.__numerator = value
 
+  """аналогично геттер и сеттер для знаменателя"""
   @property
   def denominator(self):
     return self.__denominator
-
+  
   @denominator.setter
   def denominator(self, value: int | None):
-
+    
     if not isinstance(value, int):
       raise ValueError("denominator must be an int")
-
+    
     if value != 0:
       self.__denominator = value
+    
     else:
       raise ValueError("Division by zero")
 
-  def ___add__(self, other):
-
-    if isinstance(other, Rational):
-      return Rational(self.numenator * other.denominator + self.denominator * other.numerator, self.denominator = other. denominator)
+  """Метод для сложения"""
+  def __add__(self, other):
+    if isinstance(other, Rational): 
+      return Rational(self.numenator * other.denominator + self.denominator * other.numerator, self.denominator * other. denominator)
     elif isinstance(other, int):
       return Rational(self.numerator + other * self.denominator, self.denominator)
     else:
       raise TypeError("other operand must be an integer or Rational")
 
-  def ___iadd__(self, other):  
-    """
-    
-    """
+  """Переопределение оператора совокупного сложения (+=)"""
+  def __iadd__(self, other):  
     if isinstance(other, Rational):
       self.numenator = self.numenator * other.denominator + self.denominator * other.numerator
       self.denominator = self.denominator * other.denominator
@@ -57,11 +71,30 @@ class Rational:
     else:
       raise TypeError("other operand must be an integer or Rational")
     return self
+  
+  """Метод для вычитания"""
+  def __sub__(self, other):
+    if isinstance(other, Rational): 
+      return Rational(self.numenator * other.denominator -self.denominator * other.numerator, self.denominator * other. denominator)
+    elif isinstance(other, int):
+      return Rational(self.numerator - other * self.denominator, self.denominator)
+    else:
+      raise TypeError("other operand must be an integer or Rational")
 
-  def __eq__(self, value):
-    """
+  """Метод для умножения"""
+  def __mul__(self, other):
+    if isinstance(other, Rational):
+      return Rational(self.numenator * other.numenator, self.denominator*other.denominator)
+    elif isinstance(other, int):
+      return Rational(self.numenator * other, self.denominator)
+    else:
+      raise TypeError("other operand must be an integer or Rational")
     
-    """
+  """Метод для деления"""
+
+
+  """сравнение"""
+  def __eq__(self, value):
     if isinstance(other, Rational):
       return (self.numerator * other.denominator) == (self.denominator * other.numenator)
     elif isinstance(other, int):
@@ -79,6 +112,8 @@ class Rational:
     else: 
       return Rational(1, 1)
 
+
+
   def __abs__(self):
     return Rational(abs(self.numerator), abs(self. denominator))
 
@@ -88,16 +123,19 @@ class Rational:
     """
     return not self == other
 
+  """представляет рациональное число в формате "числитель/знаменатель"
+  в формате строки"""
   def __str__(self):
     return str(round(self.__numerator / self.__denominator, 10))
 
+  """"""
   def __repr__(self):
-    pass
+    return f"Rational({self.__numerator}, {self.__denominator})"
 
   def print_fraction(self):
-    pass
+    return f"Rational number: ({self.__numerator} / {self.__denominator})"
 
+  
 
 
 a = Rational(1,0)
-a.numerator = 5
