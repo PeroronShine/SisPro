@@ -4,7 +4,7 @@ class Rational:
   или None
 
   проверяем на целочисленность, а после устанавливаем значения 
-  =как закрытое поле (атрибут)
+  как закрытое поле (атрибут)
   """
   def __init__(self, n: int | None, m: int | None):
     if not isinstance(n, int):
@@ -61,7 +61,6 @@ class Rational:
     else:
       raise TypeError("other operand must be an integer or Rational")
 
-  """Переопределение оператора совокупного сложения (+=)"""
   def __iadd__(self, other):  
     if isinstance(other, Rational):
       self.numenator = self.numenator * other.denominator + self.denominator * other.numerator
@@ -75,11 +74,21 @@ class Rational:
   """Метод для вычитания"""
   def __sub__(self, other):
     if isinstance(other, Rational): 
-      return Rational(self.numenator * other.denominator -self.denominator * other.numerator, self.denominator * other. denominator)
+      return Rational(self.numenator * other.denominator + self.denominator * other.numerator * -1, self.denominator * other. denominator)
     elif isinstance(other, int):
       return Rational(self.numerator - other * self.denominator, self.denominator)
     else:
       raise TypeError("other operand must be an integer or Rational")
+
+  def __isub__(self, other):
+    if isinstance(other, Rational):
+      self.numenator = self.numenator * other.denominator - self.denominator * other.numerator
+      self.denominator = self.denominator * other.denominator
+    elif isinstance(other, int):
+      self.numenator = self.numerator - other * self.denominator
+    else:
+      raise TypeError("other operand must be an integer or Rational")
+    return self
 
   """Метод для умножения"""
   def __mul__(self, other):
@@ -90,10 +99,36 @@ class Rational:
     else:
       raise TypeError("other operand must be an integer or Rational")
     
+  def __imul__(self, other):
+    if isinstance(other, Rational):
+      self.numenator = self.numenator * other.numenator
+      self.denominator = self.denominator * other.denominator
+    elif isinstance(other, int):
+      self.numenator = self.numerator * other
+    else:
+      raise TypeError("other operand must be an integer or Rational")
+    return self
+    
   """Метод для деления"""
+  def __div__(self, other):
+    if isinstance(other, Rational):
+      return Rational(self.numenator * other.denominator, self.denominator * other.numenator)
+    elif isinstance(other, int):
+      return Rational(self.numenator, self.denominator * other)
+    else:
+      raise TypeError("other operand must be an integer or Rational")
+  
+  def __idiv__(self, other):
+    if isinstance(other, Rational):
+      self.numenator = self.numenator * other.denominator
+      self.denominator = self.denominator * other.numenator
+    elif isinstance(other, int):
+      self.denominator = self.denominator * other
+    else:
+      raise TypeError("other operand must be an integer or Rational")
+    return self
 
-
-  """сравнение"""
+  """метод определения равенства (==)"""
   def __eq__(self, value):
     if isinstance(other, Rational):
       return (self.numerator * other.denominator) == (self.denominator * other.numenator)
@@ -102,6 +137,7 @@ class Rational:
     else:
       raise ValueError("other operand must be an int or Rational")
 
+  """возведение в степень"""
   def __pow__(self, other: int | None):
     if not isinstance(other, int):
       raise ValueError("other operand must be an int")
@@ -112,15 +148,11 @@ class Rational:
     else: 
       return Rational(1, 1)
 
-
-
   def __abs__(self):
     return Rational(abs(self.numerator), abs(self. denominator))
 
+  """метод определения неравенства (!=)"""
   def __ne__(self, value):
-    """
-    
-    """
     return not self == other
 
   """представляет рациональное число в формате "числитель/знаменатель"
@@ -128,7 +160,6 @@ class Rational:
   def __str__(self):
     return str(round(self.__numerator / self.__denominator, 10))
 
-  """"""
   def __repr__(self):
     return f"Rational({self.__numerator}, {self.__denominator})"
 
