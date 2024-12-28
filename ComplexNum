@@ -1,0 +1,47 @@
+class ComplexNumber:
+  """вид комплексного числа ai+b"""
+  def __init__(self, a: Rational | None, b: Rational | None):
+    if not isinstance(a, Rational):
+      raise ValueError("imag must be an rational")
+    if not isinstance(b, Rational):
+      raise ValueError("real must be an rational")
+    self.__imag = a
+    self.__real = b
+
+    @property
+    def imag(self):
+      return self.__imag
+    
+    @imag.setter
+    def imag(self, value: Rational | None):
+        if not isinstance(value, Rational):
+            raise ValueError("imag must be an rational")
+        self.__imag = value
+
+    @property
+    def real(self):
+      return self.__real
+    
+    @real.setter
+    def real(self, value: Rational | None):
+        if not isinstance(value, Rational):
+            raise ValueError("real must be an rational")
+        self.__real = value
+
+    def __add__(self, other):
+        return ComplexNumber(self.real + other.real, self.imag + other.imag)
+
+    def __iadd__(self, other):
+        self.real = self.real + other.real
+        self.imag = self.imag + other.imag
+        return self
+
+    def __sub__(self, other):
+      return ComplexNumber(self.real - other.real, self.imag - other.imag)
+
+    def __isub__(self, other):
+      self.real = self.real + other.real*(-1)
+      self.imag = self.imag + other.imag*(-1)
+      return self
+    
+    
