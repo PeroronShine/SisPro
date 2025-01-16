@@ -1,11 +1,3 @@
-"""1. Отсутствует неявное преобразование типов в рациональный и в последующем комплексный тип
-2) Отсутствует проверка на деление на 0 в рациональных числах при операторе деления
-3. Необходимо добавить тесты содержащие большие числовые значения
-4. Необходимо добавить логические тесты (допустим деление на 0)
-5. Отсутствует покрытие тестами комплексных чисел
-6. Необходимо отделить тесты и реализацию модулей
-Оценка на текущий момент: реализация 7/10 тесты 5/10."""
-
 class Rational:
   """принимаем два необязательных аргумента (n)числитель и (m)знаментель
   используем аннотацию типов, указываем, что оба числа могут быть целыми
@@ -167,6 +159,7 @@ class Rational:
     else:
       return Rational(self.numerator ** exponent, self.denominator ** exponent)
 
+  """модуль"""
   def __abs__(self):
     return Rational(abs(self.numerator), abs(self.denominator))
 
@@ -183,54 +176,3 @@ class Rational:
 
   def to_float(self):
     return self.numerator / self.denominator
-
-a = Rational(1,2)
-b = Rational(3,4)
-
-import unittest
-class TestRational(unittest.TestCase):
-  def test_initialization(self):
-    r = Rational(3, 4)
-    self.assertEqual(r.numerator, 3)
-    self.assertEqual(r.denominator, 4)
-
-  def test_add(self):
-    self.assertEqual(a + b, Rational(10, 8))
-
-  def test_iadd(self):
-    a += b
-    result = a + b
-    self.assertEqual(a, result)
-
-  def test_sub(self):
-    self.assertEqual(a - b, Rational(-2, 8))
-
-  def test_isub(self):
-    a -= b
-    result = a - b
-    self.assertEqual(a, result)
-
-  def test_mul(self):
-    self.assertEqual(a * b, Rational(3, 8))
-
-  def test_imul(self):
-    a *= b
-    result = a * b
-    self.assertEqual(a, result)
-
-  def test_truediv(self):
-    self.assertEqual(a / b, Rational(4, 6))
-
-  def test_itruediv(self):
-    a /= b
-    result = a / b
-    self.assertEqual(a, result)
-
-  def test_equality(self):
-    self.assertEqual(a, Rational(1, 2))
-
-  def test_inequality(self):
-    self.assertEqual(a, Rational(3, 4))
-
-  def test_str(self):
-    self.assertEqual(str(b), "3/4")
