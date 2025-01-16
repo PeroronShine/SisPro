@@ -1,0 +1,52 @@
+from rational import Rational
+
+a = Rational(1,2)
+b = Rational(3,4)
+
+import unittest
+class TestRational(unittest.TestCase):
+  def test_initialization(self):
+    r = Rational(3, 4)
+    self.assertEqual(r.numerator, 3)
+    self.assertEqual(r.denominator, 4)
+
+  def test_add(self):
+    self.assertEqual(a + b, Rational(10, 8))
+
+  def test_iadd(self):
+    a += b
+    result = a + b
+    self.assertEqual(a, result)
+
+  def test_sub(self):
+    self.assertEqual(a - b, Rational(-2, 8))
+
+  def test_isub(self):
+    a -= b
+    result = a - b
+    self.assertEqual(a, result)
+
+  def test_mul(self):
+    self.assertEqual(a * b, Rational(3, 8))
+
+  def test_imul(self):
+    a *= b
+    result = a * b
+    self.assertEqual(a, result)
+
+  def test_truediv(self):
+    self.assertEqual(a / b, Rational(4, 6))
+
+  def test_itruediv(self):
+    a /= b
+    result = a / b
+    self.assertEqual(a, result)
+
+  def test_equality(self):
+    self.assertEqual(a, Rational(1, 2))
+
+  def test_inequality(self):
+    self.assertEqual(a, Rational(3, 4))
+
+  def test_str(self):
+    self.assertEqual(str(b), "3/4")
