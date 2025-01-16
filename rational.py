@@ -1,3 +1,11 @@
+"""1. Отсутствует неявное преобразование типов в рациональный и в последующем комплексный тип
+2) Отсутствует проверка на деление на 0 в рациональных числах при операторе деления
+3. Необходимо добавить тесты содержащие большие числовые значения
+4. Необходимо добавить логические тесты (допустим деление на 0)
+5. Отсутствует покрытие тестами комплексных чисел
+6. Необходимо отделить тесты и реализацию модулей
+Оценка на текущий момент: реализация 7/10 тесты 5/10."""
+
 class Rational:
   """принимаем два необязательных аргумента (n)числитель и (m)знаментель
   используем аннотацию типов, указываем, что оба числа могут быть целыми
@@ -61,6 +69,7 @@ class Rational:
       raise TypeError("Operand must be an integer or Rational")
 
   def __iadd__(self, other):
+    """Метод для унарного сложения"""
     if isinstance(other, Rational):
       self.numerator = self.numerator * other.denominator + self.denominator * other.numerator
       self.denominator = self.denominator * other.denominator
@@ -70,8 +79,8 @@ class Rational:
       raise TypeError("Operand must be an integer or Rational")
     return self
 
-  """Метод для вычитания"""
   def __sub__(self, other):
+    """Метод для вычитания"""
     if isinstance(other, Rational):
       return Rational(self.numerator * other.denominator + self.denominator * other.numerator * -1, self.denominator * other. denominator)
     elif isinstance(other, int):
@@ -80,6 +89,7 @@ class Rational:
       raise TypeError("Operand must be an integer or Rational")
 
   def __isub__(self, other):
+    """Метод для унарного вычитания"""
     if isinstance(other, Rational):
       self.numerator = self.numerator * other.denominator - self.denominator * other.numerator
       self.denominator = self.denominator * other.denominator
@@ -89,8 +99,8 @@ class Rational:
       raise TypeError("Operand must be an integer or Rational")
     return self
 
-  """Метод для умножения"""
   def __mul__(self, other):
+    """Метод для умножения"""
     if isinstance(other, Rational):
       return Rational(self.numerator * other.numerator, self.denominator*other.denominator)
     elif isinstance(other, int):
@@ -99,6 +109,7 @@ class Rational:
       raise TypeError("Operand must be an integer or Rational")
 
   def __imul__(self, other):
+    """Метод для унарного умножения"""
     if isinstance(other, Rational):
       self.numerator *= other.numerator
       self.denominator *= other.denominator
@@ -108,27 +119,34 @@ class Rational:
       raise TypeError("Operand must be an integer or Rational")
     return self
 
-  """Метод для деления"""
   def __truediv__(self, other):
+    """Метод для деления"""
+    if isinstance(other, int):
+      if other == 0:
+        raise ValueError("Division by zero")
+      else:
+        return Rational(self.numerator, self.denominator * other)
     if isinstance(other, Rational):
       return Rational(self.numerator * other.denominator, self.denominator * other.numerator)
-    elif isinstance(other, int):
-      return Rational(self.numerator, self.denominator * other)
     else:
       raise TypeError("Operand must be an integer or Rational")
 
   def __itruediv__(self, other):
+    """Метод для унарного деления"""
+    if isinstance(other, int):
+      if other == 0:
+        raise ValueError("Division by zero")
+      else:
+        self.denominator *= other
     if isinstance(other, Rational):
       self.numerator *= other.denominator
       self.denominator *= other.numerator
-    elif isinstance(other, int):
-      self.denominator *= other
     else:
       raise TypeError("Operand must be an integer or Rational")
     return self
 
-  """метод определения равенства (==)"""
   def __eq__(self, other):
+    """метод определения равенства (==)"""
     if isinstance(other, Rational):
       return self.numerator * other.denominator == self.denominator * other.numerator
     elif isinstance(other, int):
@@ -136,8 +154,8 @@ class Rational:
     else:
       raise ValueError("Operand must be an int or Rational")
 
-  """метод определения неравенства (!=)"""
-  def __ne__(self, value):
+  def __ne__(self, other):
+    """метод определения неравенства (!=)"""
     return not self == other
 
   """возведение в степень"""
@@ -162,7 +180,7 @@ class Rational:
 
   def print_fraction(self):
     return f"Rational number: ({self.numerator} / {self.denominator})"
-    
+
   def to_float(self):
     return self.numerator / self.denominator
 
@@ -216,6 +234,3 @@ class TestRational(unittest.TestCase):
 
   def test_str(self):
     self.assertEqual(str(b), "3/4")
-
-
-  
