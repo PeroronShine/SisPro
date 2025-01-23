@@ -143,7 +143,7 @@ class Rational:
   def __ne__(self, other):
     if isinstance(other, Rational):
       return self.numerator != other.numerator or self.denominator != other.denominator
-    return NotImplemented
+    return ValueError("Operand must be an int or rational")
 
   def __pow__(self, exponent: int):
     if not isinstance(exponent, int):
@@ -158,28 +158,28 @@ class Rational:
       return self.numerator * other.denominator < other.numerator * self.denominator
     elif isinstance(other, int | float):
       return self.numerator < other * self.denominator
-    return NotImplemented
+    return ValueError("Operand must be an int or rational")
 
   def __le__(self, other):
     if isinstance(other, Rational):
       return self.numerator * other.denominator <= other.numerator * self.denominator
     elif isinstance(other, int | float):
       return self.numerator <= other * self.denominator
-    return NotImplemented
+    return ValueError("Operand must be an int or rational")
   
   def __gt__(self, other):
     if isinstance(other, Rational):
         return self.numerator * other.denominator > other.numerator * self.denominator
     elif isinstance(other, int | float):
         return self.numerator > other * self.denominator
-    return NotImplemented
+    return ValueError("Operand must be an int or rational")
 
   def __ge__(self, other):
     if isinstance(other, Rational):
         return self.numerator * other.denominator >= other.numerator * self.denominator
     elif isinstance(other, int | float):
         return self.numerator >= other * self.denominator
-    return NotImplemented
+    return ValueError("Operand must be an int or rational")
 
   def __round__(self, n=None):
       if n is None:
