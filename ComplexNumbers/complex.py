@@ -34,7 +34,7 @@ class Complex:
       return Complex(self.real + other, self.imag)
     if isinstance(other, Complex):
       return Complex(self.real + other.real, self.imag + other.imag)
-    return NotImplemented
+    return ValueError("other must be rational or int or float")
     
   def __iadd__(self, other):
     if isinstance(other, Rational | int | float):
@@ -44,7 +44,7 @@ class Complex:
       self.real += other.real
       self.imag += other.imag
     else:
-      return NotImplemented
+      return ValueError("other must be rational or int or float")
     return self
 
   def __sub__(self, other):
@@ -52,7 +52,7 @@ class Complex:
       return Complex(self.real - other.real, self.imag - other.imag)
     if isinstance(other, Rational | int | float):
       return Complex(self.real - other, self.imag)
-    return NotImplemented
+    return ValueError("other must be rational or int or float")
   
   def __isub__(self, other):
     if isinstance(other, Rational | int | float):
@@ -62,7 +62,7 @@ class Complex:
       self.real -= other.real
       self.imag -= other.real
     else:
-      return NotImplemented
+      return ValueError("other must be rational or int or float")
     return self
 
   def __mul__(self, other):
@@ -70,7 +70,7 @@ class Complex:
       return Complex(self.real * other, self.imag * other)
     if isinstance(other, Complex):
       return Complex(self.real * other.real - self.imag * other.imag, self.real * other.imag + self.imag * other.real)
-    return NotImplemented
+    return ValueError("other must be rational or int or float")
     
   def __imul__(self, other):
     if isinstance(other, Rational | int | float):
@@ -80,7 +80,7 @@ class Complex:
       self.real = self.real * other.real - self.imag * other.imag
       self.imag = self.real * other.imag + self.imag * other.real
     else:
-      return NotImplemented
+      return ValueError("other must be rational or int or float")
     return self
 
   def __truediv__(self, other):
@@ -91,7 +91,7 @@ class Complex:
       if denominator.numerator == 0:
         raise ZeroDivisionError("Cannot divide by zero")
       return Complex((self.real * other.real + self.imag * other.imag) / denominator, (self.imag * other.real - self.real * other.imag) / denominator)
-    return NotImplemented
+    return ValueError("other must be rational or int or float")
 
   def __itruediv__(self, other):
     if isinstance(other, Rational | int | float):
@@ -108,7 +108,7 @@ class Complex:
       self.real = (self.real * other.real + self.imag * other.imag) / (other.real * other.real + other.imag * other.imag)
       self.imag = (self.imag * other.real - self.real * other.imag) / (other.real * other.real + other.imag * other.imag)
     else:
-      return NotImplemented
+      return ValueError("other must be rational or int or float")
     return self
 
   def __eq__(self, other):
@@ -116,7 +116,7 @@ class Complex:
       return self.real == other and self.imag == 0
     if isinstance(other, Complex):
       return self.real == other.real and self.imag == other.imag
-    return NotImplemented
+    return ValueError("other must be rational or int or float")
 
   def __ne__(self, other):
     return not self == other
