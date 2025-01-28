@@ -23,7 +23,7 @@ class Rational:
       self.denominator = m.numerator
 
   def _float_input(self, num, denom):
-    #num denom - вещ числа
+    """num denom - вещ числа"""
     num_num, num_denom = None, None
     den_num, den_denom = None, None
 
@@ -32,7 +32,6 @@ class Rational:
     if isinstance(denom, float):
         den_num, den_denom = self._float2rational(denom)
 
-    #обработка
     if num_num is not None and den_num is not None:
       self.numerator = num_num * den_denom
       self.denominator = den_num * num_denom
@@ -48,6 +47,7 @@ class Rational:
       self.denominator = denom
   
   def _simplify(self):
+    """сокращение дроби"""
     gcd_val = math.gcd(self.numerator, self.denominator)
     self.numerator //= gcd_val
     self.denominator //= gcd_val
@@ -72,19 +72,21 @@ class Rational:
 
     return sign * numerator, denom
 
+  """геттеры для чисел"""
   @property
   def numerator(self):
     return self.__numerator
 
+  @property
+  def denominator(self):
+    return self.__denominator
+
+  """сеттеры"""
   @numerator.setter
   def numerator(self, value: int | None):
     if not isinstance(value, int):
       raise ValueError("numerator must be an int")
     self.__numerator = value
-
-  @property
-  def denominator(self):
-    return self.__denominator
 
   @denominator.setter
   def denominator(self, value: int | None):
@@ -154,6 +156,7 @@ class Rational:
       return Rational(self.numerator ** exponent, self.denominator ** exponent)
 
   def __lt__(self, other):
+    """меньше чем (<)"""
     if isinstance(other, Rational):
       return self.numerator * other.denominator < other.numerator * self.denominator
     elif isinstance(other, int | float):
@@ -161,6 +164,7 @@ class Rational:
     return ValueError("Operand must be an int or rational")
 
   def __le__(self, other):
+    """меньше или равно (<=)"""
     if isinstance(other, Rational):
       return self.numerator * other.denominator <= other.numerator * self.denominator
     elif isinstance(other, int | float):
@@ -168,6 +172,7 @@ class Rational:
     return ValueError("Operand must be an int or rational")
   
   def __gt__(self, other):
+    """больше чем (>)"""
     if isinstance(other, Rational):
         return self.numerator * other.denominator > other.numerator * self.denominator
     elif isinstance(other, int | float):
@@ -175,6 +180,7 @@ class Rational:
     return ValueError("Operand must be an int or rational")
 
   def __ge__(self, other):
+    """больше или равно(>=)"""
     if isinstance(other, Rational):
         return self.numerator * other.denominator >= other.numerator * self.denominator
     elif isinstance(other, int | float):
