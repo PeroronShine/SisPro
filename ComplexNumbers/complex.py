@@ -29,7 +29,6 @@ class Complex:
     self.__real = value
 
   def __add__(self, other):
-    '''метод для сложения'''
     if isinstance(other, Rational | int | float):
       return Complex(self.real + other, self.imag)
     if isinstance(other, Complex):
@@ -136,8 +135,9 @@ class Complex:
       raise ValueError("Exponent must be a natural number")
     if n == 0:
       return Complex(Rational(1, 1), Rational(0, 1))
+    
     result = Complex(Rational(1, 1), Rational(0, 1))
-    for _ in range(n):
+    for i in range(n):
       result *= self
     return result
 
