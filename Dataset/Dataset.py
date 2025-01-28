@@ -2,15 +2,17 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from sklearn.model_selection import KFold, cross_val_score
+from sklearn.model_selection import StratifiedKFold, KFold
 from sklearn.linear_model import LinearRegression
+import tensorflow as tf
+import torch
 
 
 class Dataset:
     def __init__(self, path_to_file: str):
         self.__data = pd.read_csv(path_to_file)
-        self.X = None  # Features
-        self.y = None  # Target variable
+        self.X = None  
+        self.y = None  
 
     def get_data(self) -> pd.DataFrame:
         """Returns the data."""
@@ -77,7 +79,6 @@ class Dataset:
         """Prepares data for analysis, excluding the target column from encoding."""
         self.fill_missing(strategy=fill_strategy)
         categorical_cols = self.identify_categorical(threshold=threshold)
-        # Exclude the target column from categorical encoding
         categorical_cols = [col for col in categorical_cols if col != target_column]
         self.encode_categorical(categorical_cols, strategy=encode_strategy)
         self.split_data(target_column)
@@ -109,33 +110,62 @@ class Dataset:
         elif to_tensor == 'pytorch':
             '''self.X и self.y, представленные в виде значений,
             преобразуются в тензоры с типом данных float32.'''
-            import torch
             return torch.tensor(self.X.values, dtype=torch.float32), torch.tensor(self.y.values, dtype=torch.float32)
         elif to_tensor == 'tensorflow':
-            import tensorflow as tf
             return tf.convert_to_tensor(self.X.values, dtype=tf.float32), tf.convert_to_tensor(self.y.values, dtype=tf.float32)
         else:
             raise ValueError("Only 'numpy', 'pytorch', and 'tensorflow' are supported.")
 
-    def cross_validate(self, model, cv: int = 5, scoring: str = 'r2'):
-        """Performs cross-validation for the model."""
-        if self.X is None or self.y is None:
-            raise ValueError("Data not split into features and target. Call split_data().")
-        scores = cross_val_score(model, self.X, self.y, cv=cv, scoring=scoring)
-        print(f"Cross-validation scores: {scores}")
-        print(f"Mean score: {np.mean(scores)}")
-        return scores
+    
+    def cross_validate(self, n_splits=5, stratify_by=None):
+        if stratify_by:
+            """Стратификация данных с сохранением пропорций"""
+
+            if isinstance(stratify_by, list) and all(feature in self.__data.columns for feature in stratify_by):  
+                """стратификация по нескольким признакам"""
+                stratify_cols = []
+                for col in stratify_by: 
+                    if col in self.__categorical_features: 
+                        stratify_cols.append(self.__data[col].astype(str))
+                    else: 
+                        """бинирование непрерывных признаков"""
+                        self.__data[f'{col}_binned_feature'] = pd.qcut(self.data[col], q=4, labels=False)
+                        stratify_cols.append(self.__data[f'{col}_binned_feature'].astype(str))
+                self.__data['stratify_feature'] = stratify_cols[0]
+                for col in stratify_cols[1:]:
+                    self.__data['stratify_feature'] += '_' + col
+                skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
+                splits = skf.split(self.__data, self.__data['stratify_feature'])
+                return [(self.__data.iloc[train_idx], self.__data.iloc[test_idx]) for train_idx, test_idx in splits] 
+
+            
+            elif stratify_by in self.__data.columns: 
+                """стратификация по одному признаку"""
+                if stratify_by in self.__categorical_data:
+                    """одиночный категориальный признак""" 
+                    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
+                    splits = skf.split(self.__data, self.__data[stratify_by])ъ
+                    return [(self.__data.iloc[train_idx], self.__data.iloc[test_idx]) for train_idx, test_idx in splits]
+                
+                else:
+                    """одиночный непрерывный признак
+                    создаем столбец категориального признака, переведенного из непрерывного"""
+                    self.__data[f'{stratify_by}_binned_feature'] = pd.qcut(self.data[stratify_by], q=4, labels=False)=
+                    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
+                    splits = skf.split(self.__data, self.__data[f'{stratify_by}_binned_feature'])
+                    return [(self.__data.iloc[train_idx], self.__data.iloc[test_idx]) for train_idx, test_idx in splits]
+        else: 
+            """Kfold кросс-валидация""" 
+            kf = Kfold(n_splits=n_splits, shuffle=True, random_state=42)
+            splits = kf.split(self.data)
+            return [(self.__data.iloc[train_idx], self.__data.iloc[test_idx]) for train_idx, test_idx in splits]
 
 
-# Example usage
 data1 = Dataset('/content/gym_members_exercise_tracking.csv')
 data1.prepare_data(target_column='Age', fill_strategy='mode', encode_strategy='OneHot')
 data1.display_stat()
 
-# Transform data into tensors
 X_np, y_np = data1.transform(to_tensor='numpy')
 
-# Cross-validation
-from sklearn.linear_model import LinearRegression
 model = LinearRegression()
-data1.cross_validate(model, cv=5, scoring='r2')
+data1.cross_validate(n_splits=10, stratify_by=['Age', 'Sex'])
